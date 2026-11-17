@@ -3,12 +3,21 @@ require('dotenv').config();
 const express     = require('express');
 const bodyParser  = require('body-parser');
 const cors        = require('cors');
+const helmet      = require('helmet');
 
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
 
 const app = express();
+
+// ---- Seguridad con Helmet ----
+// Solo permitir que el sitio se cargue en un iFrame de nuestras propias paginas
+app.use(helmet.frameguard({ action: 'sameorigin' }));
+// No permitir DNS prefetching
+app.use(helmet.dnsPrefetchControl({ allow: false }));
+// Solo enviar el referrer a nuestras propias paginas
+app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
